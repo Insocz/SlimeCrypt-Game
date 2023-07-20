@@ -436,9 +436,6 @@ int main(){
             }
 
             Map_class.creGrid("lv1.txt",130,map_grid);
-
-            mvwprintw(main_win,10,1,"%c",map_grid[9][0]);
-
             Player_class.setPla(y_pos,x_pos,main_win,up);
 
             while (1){            
