@@ -8,10 +8,10 @@ using namespace std;
 
 class Map_manager{
     public:
-        void creLev(string file_name,int wight,WINDOW * win);        
+        void creGrid(string file_name,int wight,char (&map_grid)[32][128]);        
 };
 
-void Map_manager::creLev(string file_name,int wight,WINDOW * win){
+void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
     ifstream file(file_name);
 
     if (!file.is_open()) {
@@ -21,23 +21,27 @@ void Map_manager::creLev(string file_name,int wight,WINDOW * win){
         exit(1);
     }
 
-    int i = 1;
-    int j = 1;
+    int i = 0;
+    int j = 0;
     char ch;
 
     while (file.get(ch)) {
-        mvwprintw(win, i, j, "%c", ch);
+        map_grid[i][j] = ch;
         j++;
-        if (j == wight) {
+        if (j == wight-1) {
             i++;
-            j = 1;
+            j = 0;
         }
     }
     file.close();
 
-    box(win,0,0);
-    refresh();
-    wrefresh(win);
+    /* for showing the map_grid
+    for(int h = 0;h <= 32;h++){
+        for(int w = 0;w <= 128;w++){
+            mvwprintw(win,h+1,w+1,"%c",map_grid[h][w]);
+        }
+    }
+    */
 }
 
 class Window_manager{
@@ -365,6 +369,7 @@ int main(){
         char c;
         bool up = true;
         int speed;
+        char map_grid[32][128];
     //set vars end
 
     //code start
@@ -430,12 +435,11 @@ int main(){
                 }
             }
 
-            Map_class.creLev("lv1.txt",130,main_win);
-            Player_class.setPla(y_pos,x_pos,main_win,up);
+            Map_class.creGrid("lv1.txt",130,map_grid);
 
-            wattron(main_win,A_INVIS);
-            mvwprintw(main_win,1,1,"X");
-            wattroff(main_win,A_INVIS);
+            mvwprintw(main_win,10,1,"%c",map_grid[9][0]);
+
+            Player_class.setPla(y_pos,x_pos,main_win,up);
 
             while (1){            
                 Player_class.movPla(c,y_pos,x_pos,main_win,up);
@@ -448,10 +452,11 @@ int main(){
                         break;
                     }
                     
-                    Map_class.creLev("lv1.txt",130,main_win);
+                    Map_class.creGrid("lv1.txt",130,map_grid);
                     Player_class.setPla(y_pos,x_pos,main_win,up);
                 
                 }
+
             }
 
         //code main end
