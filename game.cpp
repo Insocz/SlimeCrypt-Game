@@ -9,6 +9,7 @@ using namespace std;
 class Map_manager{
     public:
         void creGrid(string file_name,int wight,char (&map_grid)[32][128]);        
+        void renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win);
 };
 
 void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
@@ -42,6 +43,29 @@ void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
         }
     }
     */
+}
+
+void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win){
+
+    for(int i = 2;i<=8;i++){
+        for(int j = 0;j<=4;j++){
+            mvwprintw(win,y_pos-(i-1),x_pos+j,"%c",grid[y_pos-i][x_pos+j-1]);
+            mvwprintw(win,y_pos+(i),x_pos+j,"%c",grid[y_pos+(i-1)][x_pos+j-1]);
+        }
+    }
+
+    for(int i = 2;i<=16;i++){
+        mvwprintw(win,y_pos,x_pos-(i-1),"%c",grid[y_pos-1][x_pos-i]);
+        mvwprintw(win,y_pos+1,x_pos-(i-1),"%c",grid[y_pos][x_pos-i]);
+ 
+        mvwprintw(win,y_pos,x_pos+(i+3),"%c",grid[y_pos-1][x_pos+i+2]);
+        mvwprintw(win,y_pos+1,x_pos+(i+3),"%c",grid[y_pos][x_pos+i+2]);
+    }
+
+    box(win,0,0);
+
+    refresh();
+    wrefresh(win);
 }
 
 class Window_manager{
@@ -262,43 +286,51 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
     }
 }
 
-bool Player_manager::isBlo(WINDOW * win,int y_pos,int x_pos,char c){
-
-    switch (c)
-    {
+bool Player_manager::isBlo(WINDOW *win, int y_pos, int x_pos, char c) {
+    switch (c) {
     case 'w':
         y_pos--;
-        if (' ' == mvwinch(win,y_pos,x_pos) && ' ' == mvwinch(win,y_pos,x_pos+1) && ' ' == mvwinch(win,y_pos,x_pos+2) && ' ' == mvwinch(win,y_pos,x_pos+3) && ' ' == mvwinch(win,y_pos,x_pos+4)){
-            return true;
-        }   
+        // Adjust x_pos to check five consecutive spaces
+        for (int i = 0; i < 5; i++) {
+            if (' ' != mvwinch(win, y_pos, x_pos + i)) {
+                return false; // obstacle found, return false
+            }
+        }
+        return true; // no obstacles found, return true
         break;
-    
+
     case 's':
         y_pos += 2;
-        if (' ' == mvwinch(win,y_pos,x_pos) && ' ' == mvwinch(win,y_pos,x_pos+1) && ' ' == mvwinch(win,y_pos,x_pos+2) && ' ' == mvwinch(win,y_pos,x_pos+3) && ' ' == mvwinch(win,y_pos,x_pos+4)){
-            return true;
+        // Adjust x_pos to check five consecutive spaces
+        for (int i = 0; i < 5; i++) {
+            if (' ' != mvwinch(win, y_pos, x_pos + i)) {
+                return false; // obstacle found, return false
+            }
         }
+        return true; // no obstacles found, return true
         break;
 
     case 'a':
         x_pos--;
-        if (' ' == mvwinch(win,y_pos,x_pos) && ' ' == mvwinch(win,y_pos+1,x_pos)){
-            return true;
+        if (' ' != mvwinch(win, y_pos, x_pos) || ' ' != mvwinch(win, y_pos + 1, x_pos)) {
+            return false; // obstacle found, return false
         }
+        return true; // no obstacles found, return true
         break;
 
     case 'd':
         x_pos += 5;
-        if (' ' == mvwinch(win,y_pos,x_pos) && ' ' == mvwinch(win,y_pos+1,x_pos)){
-            return true;
+        if (' ' != mvwinch(win, y_pos, x_pos) || ' ' != mvwinch(win, y_pos + 1, x_pos)) {
+            return false; // obstacle found, return false
         }
+        return true; // no obstacles found, return true
         break;
 
     default:
         break;
     }
 
-    return false;
+    return false; // For safety, return false in case of invalid input
 }
 
 class Settings_manager{
@@ -436,6 +468,7 @@ int main(){
             }
 
             Map_class.creGrid("lv1.txt",130,map_grid);
+            Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
             Player_class.setPla(y_pos,x_pos,main_win,up);
 
             while (1){            
@@ -453,6 +486,8 @@ int main(){
                     Player_class.setPla(y_pos,x_pos,main_win,up);
                 
                 }
+
+                Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
 
             }
 
