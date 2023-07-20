@@ -1,0 +1,32 @@
+xxxxxxxxxxxxxxx|                            |xxxxxxxxxxxxxxxxxx|xxxxxxxxxxx|                                                    
+xxxxxxxxxxxxxxx|                            |xxxxxxxxxxxxxxxxxx|xxxxxxxxxxx|                                                    
+xxxxxxxxxxxxxxx|                            \__________________/xxxxxxxxxxx|                                                    
+xxxxxxxxxxxx___/                                        \xxxxxxxxxxxxxxxxxx|                                                    
+xxxxxxxxxxx/                                            |xxxxxxxxxxxxxxxxxx|                                                    
+xxxxxxxxxxx|                                            |xxxxxxxxxxxxxxxxxx|                                                    
+xxxxxxxxxxx|                                            |xxxxxxxxxxxxxxxxxx|                                 ___________________
+xxxxxxxxxxx|                                            \__________________/                                /xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx|                                                                                                |xxxxxxxxxxxxxxxxxxx
+___________/                                                                                                |xxxxxxxxxxxxxxxxxxx
+xxxxxxx/                                 ______                                                             \______________  \xx
+xxxxxxx|                                /xxxxxx\                                                                   \xxxxxxx\____
+xxxxxxx|                                |xxxxxx|                                                                    |xxxxxxxxxxx
+xxxxxxx|                                |xxxxxx|                                                                    |xxxxxxxxxxx
+_______/                                |xxxxxx|                                         __________                 |xxxxxxxxxxx
+xxxxxxx|                                \______/                                        /xxxxxxxxxx|                |xxxxxxxxxxx
+xxxxxxx\___________                     |xxxxxx|                                        |xxxxxxxxxx|                |xxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx\                    |xxxxxx|                                        |xxxxxxxxxx|                \___________
+xxxxxxxxxxxxxxxxxxx|                    |xxxxxx|                                 _______/xxxxxxxxxx|                            
+___________________/                    |xxxxxx|                                /xxxxxxxxxx/  _____|                            
+                                        |xxxxxx|                                |____________/xxxxx|                            
+                                        |xxxxxx|                                |xxxxxxxxxxxxxxxxxx|                            
+                                        |xxxxxx|                                |xxxxxxxxxxxxxxxxxx|                            
+                                        \______/                                \__________________/                            
+_______________                                                                                                                 
+xxxxxxxxxxxxxxx|                                                                                                                
+xxxxxxxxxxxxxxx|                                                                                             ___________________
+_______________/                                                                                            /xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx|                                                                                                |xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx|                                                                                                \___________________
+xxxxxxxxxxx|                                                                                                |xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx|                                                                                                |xxxxxxxxxxxxxxxxxxx
