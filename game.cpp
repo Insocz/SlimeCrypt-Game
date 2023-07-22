@@ -47,25 +47,62 @@ void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
 
 void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win){
 
-    for(int i = 2;i<=8;i++){
-        for(int j = 0;j<=4;j++){
-            mvwprintw(win,y_pos-(i-1),x_pos+j,"%c",grid[y_pos-i][x_pos+j-1]);
-            mvwprintw(win,y_pos+(i),x_pos+j,"%c",grid[y_pos+(i-1)][x_pos+j-1]);
+    /*
+    y
+          333333
+        2222222222
+    - 11111111111111
+      00000pley00000
+    + 11111pley11111
+      22222222222222
+        3333333333
+          444444
+
+    x
+    ------- ++++++++++
+          101234
+        3210123456
+      54321012345678
+    - 54321pley45678 +
+    - 54321pley45678 +
+      54321012345678
+        3210123456
+          101234
+
+    */
+
+    for(int i = 0;i<=3;i++){
+        for(int j = 0;j<=5;j++){
+            if(i != 0 || j != 0){
+                mvwprintw(win,y_pos-i,x_pos-j,"%c",grid[(y_pos-1)-i][(x_pos-1)-j]);
+            }
+        }
+
+        for(int j = 0;j<=9;j++){
+            if(i != 0 || j > 4){
+                mvwprintw(win,y_pos-i,x_pos+j,"%c",grid[(y_pos-1)-i][(x_pos-1)+j]);
+            }
         }
     }
 
-    for(int i = 2;i<=16;i++){
-        mvwprintw(win,y_pos,x_pos-(i-1),"%c",grid[y_pos-1][x_pos-i]);
-        mvwprintw(win,y_pos+1,x_pos-(i-1),"%c",grid[y_pos][x_pos-i]);
- 
-        mvwprintw(win,y_pos,x_pos+(i+3),"%c",grid[y_pos-1][x_pos+i+2]);
-        mvwprintw(win,y_pos+1,x_pos+(i+3),"%c",grid[y_pos][x_pos+i+2]);
+    for(int i = 1;i<=4;i++){
+        for(int j = 0;j<=5;j++){
+            if(i != 1 || j != 0){
+                mvwprintw(win,y_pos+i,x_pos-j,"%c",grid[(y_pos-1)+i][(x_pos-1)-j]);
+            }            
+        }
+    
+        for(int j = 0;j<=9;j++){
+            if(i != 1 || j > 4){
+                mvwprintw(win,y_pos+i,x_pos+j,"%c",grid[(y_pos-1)+i][(x_pos-1)+j]);
+            }
+        }
     }
 
     box(win,0,0);
-
     refresh();
     wrefresh(win);
+
 }
 
 class Window_manager{
@@ -472,8 +509,9 @@ int main(){
             Player_class.setPla(y_pos,x_pos,main_win,up);
 
             while (1){            
-                Player_class.movPla(c,y_pos,x_pos,main_win,up);
-
+                Player_class.movPla(c,y_pos,x_pos,main_win,up);                
+                Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
+                
                 if (c == 27){
                     
                     pouse_output = wpouse_ver(menu_win,esc_menu,3);
@@ -486,9 +524,6 @@ int main(){
                     Player_class.setPla(y_pos,x_pos,main_win,up);
                 
                 }
-
-                Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
-
             }
 
         //code main end
