@@ -247,8 +247,8 @@ string wpouse_ver(WINDOW * win,string * arra,int len){
 class Player_manager{
     public:
         void setPla(int y,int x,WINDOW * win,bool up);
-        void movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up);
-        bool isBlo(WINDOW * win,int y_pos,int x_pos,char c);
+        void movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up,char grid[][128]);
+        bool isBlo(char grid[][128],int y_pos,int x_pos,char c);
 };
 
 void Player_manager::setPla(int y,int x,WINDOW * win,bool up){
@@ -264,7 +264,7 @@ void Player_manager::setPla(int y,int x,WINDOW * win,bool up){
     wrefresh(win);
 }
 
-void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up){
+void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up,char grid[][128]){
 
     c = getch();
 
@@ -272,7 +272,7 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
     {
     case 'w':
         if (y_pos != 1){
-                if (isBlo(win,y_pos,x_pos,c)){
+                if (isBlo(grid,y_pos,x_pos,c)){
                     mvwprintw(win,y_pos+1,x_pos,"     ");
                     y_pos--;
                 }
@@ -281,7 +281,7 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
     
     case 's':
         if (y_pos != 32){
-            if (isBlo(win,y_pos,x_pos,c)){
+            if (isBlo(grid,y_pos,x_pos,c)){
                     mvwprintw(win,y_pos,x_pos,"     ");
                     y_pos++;
                 }
@@ -290,7 +290,7 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
 
     case 'a':
         if (x_pos != 1){
-            if (isBlo(win,y_pos,x_pos,c)){
+            if (isBlo(grid,y_pos,x_pos,c)){
                     mvwprintw(win,y_pos,x_pos+4," ");
                     mvwprintw(win,y_pos+1,x_pos+4," ");
                     x_pos--;
@@ -300,7 +300,7 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
 
     case 'd':
         if (x_pos != 128){
-            if (isBlo(win,y_pos,x_pos,c)){
+            if (isBlo(grid,y_pos,x_pos,c)){
                     mvwprintw(win,y_pos,x_pos," ");
                     mvwprintw(win,y_pos+1,x_pos," ");
                     x_pos++;
@@ -323,13 +323,13 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up)
     }
 }
 
-bool Player_manager::isBlo(WINDOW *win, int y_pos, int x_pos, char c) {
+bool Player_manager::isBlo(char grid[][128], int y_pos, int x_pos, char c) {
     switch (c) {
     case 'w':
         y_pos--;
         // Adjust x_pos to check five consecutive spaces
         for (int i = 0; i < 5; i++) {
-            if (' ' != mvwinch(win, y_pos, x_pos + i)) {
+            if (' ' != grid[(y_pos-1)][(x_pos-1)+i]) {
                 return false; // obstacle found, return false
             }
         }
@@ -340,7 +340,7 @@ bool Player_manager::isBlo(WINDOW *win, int y_pos, int x_pos, char c) {
         y_pos += 2;
         // Adjust x_pos to check five consecutive spaces
         for (int i = 0; i < 5; i++) {
-            if (' ' != mvwinch(win, y_pos, x_pos + i)) {
+            if (' ' != grid[(y_pos-1)][(x_pos-1)+i]) {
                 return false; // obstacle found, return false
             }
         }
@@ -349,7 +349,7 @@ bool Player_manager::isBlo(WINDOW *win, int y_pos, int x_pos, char c) {
 
     case 'a':
         x_pos--;
-        if (' ' != mvwinch(win, y_pos, x_pos) || ' ' != mvwinch(win, y_pos + 1, x_pos)) {
+        if (' ' != grid[(y_pos-1)][(x_pos-1)] || ' ' != grid[(y_pos-1)+1][x_pos]) {
             return false; // obstacle found, return false
         }
         return true; // no obstacles found, return true
@@ -357,7 +357,7 @@ bool Player_manager::isBlo(WINDOW *win, int y_pos, int x_pos, char c) {
 
     case 'd':
         x_pos += 5;
-        if (' ' != mvwinch(win, y_pos, x_pos) || ' ' != mvwinch(win, y_pos + 1, x_pos)) {
+        if (' ' != grid[(y_pos-1)][(x_pos-1)] || ' ' != grid[(y_pos-1)+1][x_pos]) {
             return false; // obstacle found, return false
         }
         return true; // no obstacles found, return true
@@ -509,7 +509,7 @@ int main(){
             Player_class.setPla(y_pos,x_pos,main_win,up);
 
             while (1){            
-                Player_class.movPla(c,y_pos,x_pos,main_win,up);                
+                Player_class.movPla(c,y_pos,x_pos,main_win,up,map_grid);                
                 Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
                 
                 if (c == 27){
