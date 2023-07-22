@@ -10,7 +10,7 @@ class Map_manager{
     public:
         void creGrid(string file_name,int wight,char (&map_grid)[32][128]);        
         void renGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win);
-        void clsGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win);
+        void clsGrid(int y_pos,int x_pos,int y,int x,WINDOW * win);
 };
 
 void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
@@ -136,7 +136,7 @@ void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDO
     wrefresh(win);
 }
 
-void Map_manager::clsGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win){
+void Map_manager::clsGrid(int y_pos,int x_pos,int y,int x,WINDOW * win){
 
     for(int i = 0;i<=y+1;i++){
         for(int j = 0;j<=x;j++){
@@ -171,6 +171,10 @@ class Window_manager{
     public:
         WINDOW * creWin(int heigh,int weight,int y,int x,int box_1,int box_2,bool key,bool boxik);
         void delWin(WINDOW * win);
+        string pouse_win(string * arra,int len,int y,int x);
+        string wpouse_ver(WINDOW * win,string * arra,int len,int y);
+        void renPouse_ver(WINDOW * win,string * arra,int len,int y);
+        
 };
 
 WINDOW * Window_manager::creWin(int heigh,int weight,int y,int x,int box_1,int box_2,bool key,bool boxik){
@@ -194,7 +198,7 @@ void Window_manager::delWin(WINDOW * win){
     delwin(win);
 }
 
-string pouse_win(string * arra,int len,int y,int x){
+string Window_manager::pouse_win(string * arra,int len,int y,int x){
     int high = 0;
     int x_size;
     int y_size;
@@ -247,7 +251,7 @@ string pouse_win(string * arra,int len,int y,int x){
     return arra[high];
 }
 
-string wpouse_ver(WINDOW * win,string * arra,int len){
+string Window_manager::wpouse_ver(WINDOW * win,string * arra,int len,int y){
     int high = 0;
     int c;
     int size = 0;
@@ -259,7 +263,7 @@ string wpouse_ver(WINDOW * win,string * arra,int len){
                 wattron(win,A_REVERSE);
             }         
         
-            mvwprintw(win,2,2+size,"%s",arra[i].c_str());
+            mvwprintw(win,y,2+size,"%s",arra[i].c_str());
             wattroff(win,A_REVERSE);
         
             size += arra[i].size() + 1;
@@ -304,6 +308,19 @@ string wpouse_ver(WINDOW * win,string * arra,int len){
     wrefresh(win);
 
     return arra[high];
+}
+
+void Window_manager::renPouse_ver(WINDOW * win,string * arra,int len,int y){
+            
+    int size = 0;
+
+    for(int i = 0;i<len;i++){
+        mvwprintw(win,y,2+size,"%s",arra[i].c_str());
+
+        size += arra[i].size() + 1;
+    }
+
+    wrefresh(win);
 }
 
 class Player_manager{
@@ -432,11 +449,111 @@ bool Player_manager::isBlo(char grid[][128], int y_pos, int x_pos, char c) {
 
 class Settings_manager{
     public:
+        void setting_set();
+        void setting_apply(int speed,int y_view,int x_view);
         void speed_get(int& speed);
         void speed_write(int speed);
-        void setting_set();
+        void viewDis_get(int& y_view,int& x_view);
+        void viewDis_write(int y_view,int x_view);
 
 };
+
+void Settings_manager::setting_set(){
+
+    Window_manager Window_class;
+
+    int x_size;
+    int y_size;
+    int c;
+    int len = 6;
+    int high = 0;
+
+    int speed_num; 
+    speed_get(speed_num);
+
+    int y_view;
+    int x_view;
+    viewDis_get(y_view,x_view);
+
+    getmaxyx(stdscr,y_size,x_size);
+
+    WINDOW * win = Window_class.creWin(20,30,y_size/2-20/2,x_size/2-30/2,0,0,true,true);
+
+    while (1)
+    {
+        
+        string settings_list[6] {"Speed: "+to_string(speed_num)+"ms <>","View: y-"+to_string(y_view)+" <>","      x-"+to_string(x_view)+" <>","","Apply","Exit"};
+        mvwprintw(win,1,2,"                ");
+        mvwprintw(win,2,2,"                ");
+        mvwprintw(win,3,2,"                ");
+
+        for(int i = 0;i<len;i++){
+            if(i == high){
+                wattron(win,A_REVERSE);
+            }         
+        
+            mvwprintw(win,i+1,2,"%s",settings_list[i].c_str());
+            wattroff(win,A_REVERSE);
+        }
+        
+        c = wgetch(win);
+
+        switch (c)
+        {
+        case KEY_UP:
+            high--;
+            if (high == -1){
+                high = len-1;
+            }
+            break;
+        
+        case KEY_DOWN:
+            high++;
+            if (high == len){
+                high = 0;
+            }
+            break;
+
+        case KEY_LEFT:
+            if (high == 0 && speed_num != 100){
+                speed_num -= 10;
+            }
+            else if(high == 1 && y_view != 0){
+                y_view -= 1;
+            }
+            else if(high == 2 && x_view != 0){
+                x_view -= 1;
+            }
+            break;
+
+        case KEY_RIGHT:
+            if (high == 0 && speed_num != 3000){
+                speed_num += 10;
+            }
+            else if(high == 1 && y_view != 20){
+                y_view += 1;
+            }
+            else if(high == 2 && x_view != 40){
+                x_view += 1;
+            }
+            break;
+
+        default:
+            break;
+
+        }
+        if (c == 10 && settings_list[high] == "Apply"){setting_apply(speed_num,y_view,x_view);break;}
+        if (c == 10 && settings_list[high] == "Exit"){break;}
+    }
+
+    Window_class.delWin(win);
+}
+
+void Settings_manager::setting_apply(int speed,int y_view,int x_view){
+    
+    speed_write(speed);
+    viewDis_write(y_view,x_view);
+}
 
 void Settings_manager::speed_get(int& speed){
 
@@ -468,7 +585,33 @@ void Settings_manager::speed_write(int speed){
     }
 }
 
+void Settings_manager::viewDis_get(int& y_view,int& x_view){
+    ifstream view_file("settings/view.txt");
+    if (view_file.is_open()) {
+        view_file >> y_view >> x_view;
+        view_file.close();
+    }
+    else{
+        endwin();
 
+        cout << "Error settings speed file missing\n";        
+        exit(1);
+    }   
+}
+
+void Settings_manager::viewDis_write(int y_view,int x_view){
+    ofstream view_file("settings/view.txt");
+    if (view_file.is_open()) {
+        view_file << y_view << "\n" << x_view;
+        view_file.close();
+    }
+    else{
+        endwin();
+
+        cout << "Error settings speed file missing\n";        
+        exit(1);
+    }   
+}
 
 int main(){
 
@@ -490,9 +633,9 @@ int main(){
         int x_size;
         int y_size;
         string pouse_output;
-        string start_menu[5] {"New game","Continue","Settings","Help","Exit"};
-        string help_menu[2] {"","insert help here"};
-        string esc_menu[3] {"Resume","Settings","Exit"};
+        string start_menu[6] {"New game","Continue","Settings","Help","","Exit"};
+        string help_menu[9] {"","The original settings is how the game","should be played but you can change it.","","Move: WSAD","Menu: arrows left,right/esc","Settings: arrows up,down,left,right","","Exit"};
+        string esc_menu[5] {"Inventory","Resume","Settings","Help","Exit"};
         int y_pos = 12;
         int x_pos = 12;
         int y_view = 2;
@@ -507,6 +650,7 @@ int main(){
 
         //code setup start
 
+            Settings_class.viewDis_get(y_view,x_view);
             Settings_class.speed_get(speed);
             timeout(speed);
 
@@ -535,7 +679,7 @@ int main(){
             WINDOW * stat_win = Window_class.creWin(5,30,y_size/2-17-5,x_size/2-65,0,0,true,true);
         
             //menu win
-            WINDOW * menu_win = Window_class.creWin(6,130,y_size/2+17,x_size/2-65,0,0,true,true);
+            WINDOW * menu_win = Window_class.creWin(5,130,y_size/2+17,x_size/2-65,0,0,true,true);
         //code setup end
 
         //code main start
@@ -546,7 +690,7 @@ int main(){
             mvprintw(y_size/2-18,x_size/2-10,"%s","|___/ |_|\\_\\ |___| |_|\\_\\ _____ |_|\\__|   |____| |_|_| |_|\\/|_| |___|");
 
             while (1){
-                pouse_output = pouse_win(start_menu,5,20,30);
+                pouse_output = Window_class.pouse_win(start_menu,6,20,30);
             
                 if (pouse_output == "New game"){
                     break;
@@ -555,10 +699,18 @@ int main(){
                     break;
                 }   
                 else if (pouse_output == "Settings"){
+                    Settings_class.setting_set();
                     Settings_class.speed_get(speed);
+                    timeout(speed);
+                    Settings_class.viewDis_get(y_view,x_view);
                 }
                 else if (pouse_output == "Help"){
-                    pouse_output = pouse_win(help_menu,2,5,30);
+                    while(1){
+                        pouse_output = Window_class.pouse_win(help_menu,9,12,45);
+                        if(pouse_output == "Exit"){
+                            break;
+                        }
+                    }
                 }
                 else if (pouse_output == "Exit"){
                     endwin();
@@ -569,24 +721,43 @@ int main(){
             Map_class.creGrid("lv1.txt",130,map_grid);
             Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
             Player_class.setPla(y_pos,x_pos,main_win,up);
+            Window_class.renPouse_ver(menu_win,esc_menu,5,2);            
 
             refresh();
             wrefresh(main_win);
 
             while (1){
-                Map_class.clsGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
+                Map_class.clsGrid(y_pos,x_pos,y_view,x_view,main_win);
                 Player_class.movPla(c,y_pos,x_pos,main_win,up,map_grid);
                 Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
                 
                 if (c == 27){
                     
-                    pouse_output = wpouse_ver(menu_win,esc_menu,3);
-
-                    if (pouse_output == "Exit"){
-                        break;
-                    }
+                    pouse_output = Window_class.wpouse_ver(menu_win,esc_menu,5,2);
                     
-                    Map_class.creGrid("lv1.txt",130,map_grid);
+                    if (pouse_output == "Settings"){
+                        Settings_class.setting_set();
+                        Settings_class.speed_get(speed);
+                        timeout(speed);
+                        Map_class.clsGrid(y_pos,x_pos,y_view,x_view,main_win);
+                        Settings_class.viewDis_get(y_view,x_view);        
+                    }
+
+                    else if (pouse_output == "Help"){
+                        while(1){
+                            pouse_output = Window_class.pouse_win(help_menu,9,12,45);
+                            if(pouse_output == "Exit"){
+                                break;
+                            }
+                        }
+                    }
+
+                    else if (pouse_output == "Exit"){
+                        endwin();
+                        return 0;
+                    }
+
+                    Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
                     Player_class.setPla(y_pos,x_pos,main_win,up);
                 
                 }
