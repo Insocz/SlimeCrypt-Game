@@ -9,7 +9,8 @@ using namespace std;
 class Map_manager{
     public:
         void creGrid(string file_name,int wight,char (&map_grid)[32][128]);        
-        void renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win);
+        void renGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win);
+        void clsGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win);
 };
 
 void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
@@ -45,7 +46,7 @@ void Map_manager::creGrid(string file_name,int wight,char (&map_grid)[32][128]){
     */
 }
 
-void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win){
+void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win){
 
     /*
     y
@@ -71,38 +72,99 @@ void Map_manager::renGrid(char grid[][128],int y_pos,int x_pos,WINDOW * win){
 
     */
 
-    for(int i = 0;i<=3;i++){
-        for(int j = 0;j<=5;j++){
+    wattron(win,A_REVERSE);
+
+    for(int i = 0;i<=y+1;i++){
+        for(int j = 0;j<=x;j++){
+            
+            wattron(win,A_REVERSE);
+            
             if(i != 0 || j != 0){
+                if(grid[(y_pos-1)-i][(x_pos-1)-j] != ' '){
+                    wattroff(win,A_REVERSE);
+                }
                 mvwprintw(win,y_pos-i,x_pos-j,"%c",grid[(y_pos-1)-i][(x_pos-1)-j]);
             }
         }
 
-        for(int j = 0;j<=9;j++){
+        for(int j = 0;j<=x+4;j++){
+            
+            wattron(win,A_REVERSE);
+            
             if(i != 0 || j > 4){
+                if(grid[(y_pos-1)-i][(x_pos-1)+j] != ' '){
+                    wattroff(win,A_REVERSE);
+                }
+
                 mvwprintw(win,y_pos-i,x_pos+j,"%c",grid[(y_pos-1)-i][(x_pos-1)+j]);
             }
         }
     }
 
-    for(int i = 1;i<=4;i++){
-        for(int j = 0;j<=5;j++){
+    for(int i = 1;i<=y+2;i++){
+        for(int j = 0;j<=x;j++){
+            
+            wattron(win,A_REVERSE);
+            
             if(i != 1 || j != 0){
+                if(grid[(y_pos-1)+i][(x_pos-1)-j] != ' '){
+                    wattroff(win,A_REVERSE);
+                }
+
                 mvwprintw(win,y_pos+i,x_pos-j,"%c",grid[(y_pos-1)+i][(x_pos-1)-j]);
             }            
         }
     
-        for(int j = 0;j<=9;j++){
+        for(int j = 0;j<=x+4;j++){
+            
+            wattron(win,A_REVERSE);
+
             if(i != 1 || j > 4){
+                if(grid[(y_pos-1)+i][(x_pos-1)+j] != ' '){
+                    wattroff(win,A_REVERSE);
+                }
+
                 mvwprintw(win,y_pos+i,x_pos+j,"%c",grid[(y_pos-1)+i][(x_pos-1)+j]);
             }
         }
     }
 
+    wattroff(win,A_REVERSE);
+
     box(win,0,0);
     refresh();
     wrefresh(win);
+}
 
+void Map_manager::clsGrid(char grid[][128],int y_pos,int x_pos,int y,int x,WINDOW * win){
+
+    for(int i = 0;i<=y+1;i++){
+        for(int j = 0;j<=x;j++){
+            if(i != 0 || j != 0){
+                mvwprintw(win,y_pos-i,x_pos-j," ");
+            }
+        }
+
+        for(int j = 0;j<=x+4;j++){
+            if(i != 0 || j > 4){
+                mvwprintw(win,y_pos-i,x_pos+j," ");
+            }
+        }
+    }
+
+    for(int i = 1;i<=y+2;i++){
+        for(int j = 0;j<=x;j++){
+            if(i != 1 || j != 0){
+                mvwprintw(win,y_pos+i,x_pos-j," ");
+            }            
+        }
+    
+        for(int j = 0;j<=x+4;j++){
+            if(i != 1 || j > 4){
+                mvwprintw(win,y_pos+i,x_pos+j," ");
+            }
+        }
+    }
 }
 
 class Window_manager{
@@ -260,8 +322,6 @@ void Player_manager::setPla(int y,int x,WINDOW * win,bool up){
         mvwprintw(win,y,x," ___ ");
         mvwprintw(win,y+1,x,"|___|");
     }
-    refresh();
-    wrefresh(win);
 }
 
 void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up,char grid[][128]){
@@ -435,6 +495,8 @@ int main(){
         string esc_menu[3] {"Resume","Settings","Exit"};
         int y_pos = 12;
         int x_pos = 12;
+        int y_view = 2;
+        int x_view = 5;
         char c;
         bool up = true;
         int speed;
@@ -505,12 +567,16 @@ int main(){
             }
 
             Map_class.creGrid("lv1.txt",130,map_grid);
-            Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
+            Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
             Player_class.setPla(y_pos,x_pos,main_win,up);
 
-            while (1){            
-                Player_class.movPla(c,y_pos,x_pos,main_win,up,map_grid);                
-                Map_class.renGrid(map_grid,y_pos,x_pos,main_win);
+            refresh();
+            wrefresh(main_win);
+
+            while (1){
+                Map_class.clsGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
+                Player_class.movPla(c,y_pos,x_pos,main_win,up,map_grid);
+                Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
                 
                 if (c == 27){
                     
