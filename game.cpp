@@ -613,6 +613,51 @@ void Settings_manager::viewDis_write(int y_view,int x_view){
     }   
 }
 
+class Inventory_manager{
+    public:
+        void show_inv();
+
+    private:
+        Window_manager Window_class;
+};
+
+void Inventory_manager::show_inv(){
+
+    int y_size,x_size;
+
+    getmaxyx(stdscr,y_size,x_size);
+
+    WINDOW * win =  Window_class.creWin(32,80,y_size/2-29/2-1,x_size/2-80/2,0,0,true,true);
+
+    wattron(win,A_REVERSE);
+
+    for(int i = 1;i<80;i++){
+        mvwprintw(win,1,i,"-");
+    }
+
+    mvwprintw(win,1,2,"Inventory");
+
+    wattroff(win,A_REVERSE);
+
+    for(int i = 1;i<50;i++){
+        for(int j = 2;j<31;j+=4){
+            mvwprintw(win,j,i,"-");
+        }
+    }
+    
+    for(int i = 1;i<50;i+=8){
+        for(int j = 2;j<31;j+=1){
+            mvwprintw(win,j,i,"|");
+        }
+    }
+
+    box(win,0,0);
+    wgetch(win);
+
+    Window_class.delWin(win);
+    
+}
+
 int main(){
 
     //pre set start
@@ -626,6 +671,7 @@ int main(){
         Map_manager Map_class;
         Player_manager Player_class;
         Settings_manager Settings_class;
+        Inventory_manager Inventory_class;
 
     //per set end
 
@@ -741,6 +787,10 @@ int main(){
                         timeout(speed);
                         Map_class.clsGrid(y_pos,x_pos,y_view,x_view,main_win);
                         Settings_class.viewDis_get(y_view,x_view);        
+                    }
+
+                    else if (pouse_output == "Inventory"){
+                        Inventory_class.show_inv();
                     }
 
                     else if (pouse_output == "Help"){
