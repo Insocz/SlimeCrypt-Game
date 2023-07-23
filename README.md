@@ -11,7 +11,7 @@
     The game is made in c++ with ncurses so its played in terminal.
     For now it work only on linux but i hope that i could make it wotk on windows one day to.
 
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![](https://github.com/Insocz/SlimeCrypt-Game/blob/master/ScreenShot%20of%20the%20game.png)
 
 ## There is lots of thinks not done yet so pls wait, the thinks that i done already are:
 * some settings
