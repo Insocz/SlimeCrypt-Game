@@ -2,7 +2,9 @@
 
 ## The game
     Its not yet done game that should be open world/dungeon explore type of game.
-    You as the player play as a slime in darknes you are lucky beacuse you can see some other creatures cant, but your vision is limited and you are weak your just small slime that is trying to survive.
+    You as the player play as a slime in darknes you are lucky beacuse you can see
+    some other creatures cant, but your vision is limited and you are weak
+    your just small slime that is trying to survive.
 
     Im not sure how many thinks i will add there but some commen rpg thinks i would like to do.
     Like weapons,chest, etc.
