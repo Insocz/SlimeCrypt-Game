@@ -616,6 +616,7 @@ void Settings_manager::viewDis_write(int y_view,int x_view){
 class Inventory_manager{
     public:
         void show_inv();
+        void set_inv(WINDOW * win);
 
     private:
         Window_manager Window_class;
@@ -627,7 +628,7 @@ void Inventory_manager::show_inv(){
 
     getmaxyx(stdscr,y_size,x_size);
 
-    WINDOW * win =  Window_class.creWin(32,80,y_size/2-29/2-1,x_size/2-80/2,0,0,true,true);
+    WINDOW * win =  Window_class.creWin(32,80,y_size/2-29/2-2,x_size/2-80/2,0,0,true,true);
 
     wattron(win,A_REVERSE);
 
@@ -652,10 +653,80 @@ void Inventory_manager::show_inv(){
     }
 
     box(win,0,0);
-    wgetch(win);
+    
+    set_inv(win);
 
     Window_class.delWin(win);
     
+}
+
+void Inventory_manager::set_inv(WINDOW * win){
+
+// 6 x 3
+// 2 x 3
+
+int x = 2;
+int y = 3;
+int c;
+
+while(1){
+    wattron(win,A_REVERSE);
+
+    for(int i=0;i<=2;i++){
+        for(int j=0;j<=6;j++){
+            mvwprintw(win,y+i,x+j," ");
+        }
+    } 
+
+    wattroff(win,A_REVERSE);
+
+    refresh();
+    wrefresh(win);
+
+    c = wgetch(win);
+
+    for(int i=0;i<=2;i++){
+        for(int j=0;j<=6;j++){
+            mvwprintw(win,y+i,x+j," ");
+        }
+    } 
+
+    switch (c)
+    {
+    case KEY_UP:
+        if (y != 3){
+            y -= 4;
+        }
+        break;
+    
+    case KEY_DOWN:
+        if (y != 27){
+            y += 4;
+        }
+        break;
+
+    case KEY_RIGHT:
+        if(x != 42){
+            x += 8;
+        }
+        break;
+
+    case KEY_LEFT:
+        if (x != 2){
+            x -= 8;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    if (c == 10){
+        break;
+    }
+
+}
+
 }
 
 int main(){
