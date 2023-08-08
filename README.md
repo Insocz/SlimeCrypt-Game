@@ -13,9 +13,14 @@
     The game is made in c++ with ncurses so its played in terminal.
     For now it work only on linux but i hope that i could make it wotk on windows one day to.
 
-![](https://github.com/Insocz/SlimeCrypt-Game/blob/master/ScreenShot%20of%20the%20game.png)
+![](https://github.com/Insocz/SlimeCrypt-Game/blob/master/ScreenShot%20of%20the%20game)
 
 The part that is visible is the "visibility around the player" its part of the game
+
+![](https://github.com/Insocz/SlimeCrypt-Game/blob/master/Screenshot%20of%20inv)
+
+This img show the inv win (only with numbers this will change in to items later or blank spots).
+Items (numbers) can be selected using Q or E to one of the to top item slots.
 
 ## There is lots of thinks not done yet so pls wait, the thinks that i done already are:
 * some settings
