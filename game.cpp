@@ -394,8 +394,8 @@ void Player_manager::movPla(char& c,int& y_pos,int& x_pos,WINDOW * win,bool& up,
     up = !up;
 
     if (c != ERR){
-        if (c == 'w' || c == 's'){usleep(200000);}
-        else {usleep(150000);}
+        if (c == 'w' || c == 's'){usleep(150000);}
+        else {usleep(100000);}
         flushinp();
     }
 }
@@ -615,14 +615,14 @@ void Settings_manager::viewDis_write(int y_view,int x_view){
 
 class Inventory_manager{
     public:
-        void show_inv();
-        void set_inv(WINDOW * win);
+        void show_inv(WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]);
+        void set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]);
 
     private:
         Window_manager Window_class;
 };
 
-void Inventory_manager::show_inv(){
+void Inventory_manager::show_inv(WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]){
 
     int y_size,x_size;
 
@@ -654,20 +654,21 @@ void Inventory_manager::show_inv(){
 
     box(win,0,0);
     
-    set_inv(win);
+    set_inv(win,wp1_win,wp2_win,inv_top,inv_box);
 
     Window_class.delWin(win);
     
 }
 
-void Inventory_manager::set_inv(WINDOW * win){
+void Inventory_manager::set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]){
 
 // 6 x 3
 // 2 x 3
 
 int x = 2;
 int y = 3;
-int c;
+int ix = 0;
+int c,temp;
 
 while(1){
     wattron(win,A_REVERSE);
@@ -680,8 +681,22 @@ while(1){
 
     wattroff(win,A_REVERSE);
 
+    for(int i = 2;i<=6*8;i+=8){
+        int z = 0;
+        z += i/8;
+        for(int j = 3;j<=7*4;j+=4){
+            mvwprintw(win,j,i,"%d",inv_box[z]);
+            z+=6;
+        }
+    }
+
+    mvwprintw(wp1_win,1,1,"%d",inv_top[0]);
+    mvwprintw(wp2_win,1,1,"%d",inv_top[1]);
+
     refresh();
     wrefresh(win);
+    wrefresh(wp1_win);
+    wrefresh(wp2_win);
 
     c = wgetch(win);
 
@@ -696,25 +711,41 @@ while(1){
     case KEY_UP:
         if (y != 3){
             y -= 4;
+            ix -= 6;
         }
         break;
     
     case KEY_DOWN:
         if (y != 27){
             y += 4;
+            ix += 6;
         }
         break;
 
     case KEY_RIGHT:
         if(x != 42){
             x += 8;
+            ix += 1;
         }
         break;
 
     case KEY_LEFT:
         if (x != 2){
             x -= 8;
+            ix -= 1;
         }
+        break;
+
+    case 101:
+        temp = inv_top[1];
+        inv_top[1] = inv_box[ix];
+        inv_box[ix] = temp;
+        break;
+
+    case 113:
+        temp = inv_top[0];
+        inv_top[0] = inv_box[ix];
+        inv_box[ix] = temp;
         break;
 
     default:
@@ -724,7 +755,6 @@ while(1){
     if (c == 10){
         break;
     }
-
 }
 
 }
@@ -761,7 +791,14 @@ int main(){
         bool up = true;
         int speed;
         char map_grid[32][128];
+        int inv_top[2] = {0,0};
+        int inv_box[41];
     //set vars end
+
+        for(int i=0;i<=41;i++){
+            inv_box[i] = i;
+        }
+
 
     //code start
 
@@ -794,18 +831,31 @@ int main(){
 
             //stat win 
             WINDOW * stat_win = Window_class.creWin(5,30,y_size/2-17-5,x_size/2-65,0,0,true,true);
-        
+
+            //wepon 1 win
+            WINDOW * wp1_win = Window_class.creWin(5,13,y_size/2-17-5,x_size/2-35,0,0,true,true);
+            mvwprintw(wp1_win,4,9,"%s","[Q]");
+            mvwprintw(wp1_win,1,1,"%d",inv_top[0]);
+            wrefresh(wp1_win);
+
+            //wepon 2 win
+            WINDOW * wp2_win = Window_class.creWin(5,13,y_size/2-17-5,x_size/2-22,0,0,true,true);
+            mvwprintw(wp2_win,4,9,"%s","[E]");
+            mvwprintw(wp2_win,1,1,"%d",inv_top[1]);
+            wrefresh(wp2_win);
+
             //menu win
             WINDOW * menu_win = Window_class.creWin(5,130,y_size/2+17,x_size/2-65,0,0,true,true);
         //code setup end
 
         //code main start
-            mvprintw(y_size/2-22,x_size/2-10,"%s","________________________________  ____   ____  __  _   ____   ______");
-            mvprintw(y_size/2-21,x_size/2-10,"%s"," ___   __     __   __  __   ___  |   _| | __ | \\ \\| | | __ | |__  __|");
-            mvprintw(y_size/2-20,x_size/2-10,"%s","|  _| |  |   |  | |  \\/  | | __| |  |   |    /  \\   | |   _|   |  |");
-            mvprintw(y_size/2-19,x_size/2-10,"%s"," \\ \\  |  |_  |  | |      | | __| |  |_  |_|\\_\\   \\__| |__|     |__|");
-            mvprintw(y_size/2-18,x_size/2-10,"%s","|___| |____| |__| |__||__| |___| |____| _____________________________");
+            mvprintw(y_size/2-22,x_size/2-7,"%s","________________________________  ____   ____  __  _   ____   ______");
+            mvprintw(y_size/2-21,x_size/2-7,"%s"," ___   __     __   __  __   ___  |   _| | __ | \\ \\| | | __ | |__  __|");
+            mvprintw(y_size/2-20,x_size/2-7,"%s","|  _| |  |   |  | |  \\/  | | __| |  |   |    /  \\   | |   _|   |  |");
+            mvprintw(y_size/2-19,x_size/2-7,"%s"," \\ \\  |  |_  |  | |      | | __| |  |_  |_|\\_\\   \\__| |__|     |__|");
+            mvprintw(y_size/2-18,x_size/2-7,"%s","|___| |____| |__| |__||__| |___| |____| _____________________________");
 
+            //start menu
             while (1){
                 pouse_output = Window_class.pouse_win(start_menu,6,20,30);
             
@@ -835,6 +885,7 @@ int main(){
                 }
             }
 
+            //load map
             Map_class.creGrid("lv1.txt",130,map_grid);
             Map_class.renGrid(map_grid,y_pos,x_pos,y_view,x_view,main_win);
             Player_class.setPla(y_pos,x_pos,main_win,up);
@@ -843,6 +894,7 @@ int main(){
             refresh();
             wrefresh(main_win);
 
+            //input
             while (1){
                 Map_class.clsGrid(y_pos,x_pos,y_view,x_view,main_win);
                 Player_class.movPla(c,y_pos,x_pos,main_win,up,map_grid);
@@ -861,7 +913,7 @@ int main(){
                     }
 
                     else if (pouse_output == "Inventory"){
-                        Inventory_class.show_inv();
+                        Inventory_class.show_inv(wp1_win,wp2_win,inv_top,inv_box);
                     }
 
                     else if (pouse_output == "Help"){
