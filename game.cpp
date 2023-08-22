@@ -433,7 +433,7 @@ bool Player_manager::isBlo(char grid[][128], int y_pos, int x_pos, char c) {
         break;
 
     case 'd':
-        x_pos += 5;
+        x_pos += 4;
         if (' ' != grid[(y_pos-1)][(x_pos-1)] || ' ' != grid[(y_pos-1)+1][x_pos]) {
             return false; // obstacle found, return false
         }
@@ -615,14 +615,15 @@ void Settings_manager::viewDis_write(int y_view,int x_view){
 
 class Inventory_manager{
     public:
-        void show_inv(WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]);
-        void set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]);
+        void show_inv(WINDOW * wp1_win,WINDOW * wp2_win,string (&inv_top) [2],string (&inv_box) [42]);
+        void set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,string (&inv_top) [2],string (&inv_box) [42]);
+        void read_inv(string (&inv_top)[2],string (&inv_box)[42]);
 
     private:
         Window_manager Window_class;
 };
 
-void Inventory_manager::show_inv(WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]){
+void Inventory_manager::show_inv(WINDOW * wp1_win,WINDOW * wp2_win,string (&inv_top) [2],string (&inv_box) [42]){
 
     int y_size,x_size;
 
@@ -660,103 +661,134 @@ void Inventory_manager::show_inv(WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top
     
 }
 
-void Inventory_manager::set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,int (&inv_top) [2],int (&inv_box) [41]){
+void Inventory_manager::set_inv(WINDOW * win,WINDOW * wp1_win,WINDOW * wp2_win,string (&inv_top) [2],string (&inv_box) [42]){
 
-// 6 x 3
-// 2 x 3
+    // 6 x 3
+    // 2 x 3
 
-int x = 2;
-int y = 3;
-int ix = 0;
-int c,temp;
+    int x = 2;
+    int y = 3;
+    int ix = 0;
+    int c;
+    string temp;
 
-while(1){
-    wattron(win,A_REVERSE);
+    while(1){
+        wattron(win,A_REVERSE);
 
-    for(int i=0;i<=2;i++){
-        for(int j=0;j<=6;j++){
-            mvwprintw(win,y+i,x+j," ");
+        for(int i=0;i<=2;i++){
+            for(int j=0;j<=6;j++){
+                mvwprintw(win,y+i,x+j," ");
+            }
+        } 
+
+        wattroff(win,A_REVERSE);
+
+        for(int i = 2;i<=6*8;i+=8){
+            int z = 0;
+            z += i/8;
+            for(int j = 3;j<=7*4;j+=4){
+                if (inv_box[z] != "0"){
+                mvwprintw(win,j,i,"%s",inv_box[z].c_str());
+                }
+                z+=6;
+            }
         }
-    } 
 
-    wattroff(win,A_REVERSE);
+        mvwprintw(wp1_win,1,1,"%s",inv_top[0].c_str());
+        mvwprintw(wp2_win,1,1,"%s",inv_top[1].c_str());
 
-    for(int i = 2;i<=6*8;i+=8){
-        int z = 0;
-        z += i/8;
-        for(int j = 3;j<=7*4;j+=4){
-            mvwprintw(win,j,i,"%d",inv_box[z]);
-            z+=6;
+        refresh();
+        wrefresh(win);
+        wrefresh(wp1_win);
+        wrefresh(wp2_win);
+
+        c = wgetch(win);
+
+        for(int i=0;i<=2;i++){
+            for(int j=0;j<=6;j++){
+                mvwprintw(win,y+i,x+j," ");
+            }
+        } 
+
+        switch (c)
+        {
+        case KEY_UP:
+            if (y != 3){
+                y -= 4;
+                ix -= 6;
+            }
+            break;
+
+        case KEY_DOWN:
+            if (y != 27){
+                y += 4;
+                ix += 6;
+            }
+            break;
+
+        case KEY_RIGHT:
+            if(x != 42){
+                x += 8;
+                ix += 1;
+            }
+            break;
+
+        case KEY_LEFT:
+            if (x != 2){
+                x -= 8;
+                ix -= 1;
+            }
+            break;
+
+        case 101:
+            if (inv_box[ix] != "0"){
+            temp = inv_top[1];
+            inv_top[1] = inv_box[ix];
+            inv_box[ix] = temp;
+            }
+            break;
+
+        case 113:
+            if (inv_box[ix] != "0"){
+            temp = inv_top[0];
+            inv_top[0] = inv_box[ix];
+            inv_box[ix] = temp;
+            }
+            break;
+
+        default:
+            break;
         }
-    }
 
-    mvwprintw(wp1_win,1,1,"%d",inv_top[0]);
-    mvwprintw(wp2_win,1,1,"%d",inv_top[1]);
-
-    refresh();
-    wrefresh(win);
-    wrefresh(wp1_win);
-    wrefresh(wp2_win);
-
-    c = wgetch(win);
-
-    for(int i=0;i<=2;i++){
-        for(int j=0;j<=6;j++){
-            mvwprintw(win,y+i,x+j," ");
+        if (c == 10){
+            break;
         }
-    } 
-
-    switch (c)
-    {
-    case KEY_UP:
-        if (y != 3){
-            y -= 4;
-            ix -= 6;
-        }
-        break;
-    
-    case KEY_DOWN:
-        if (y != 27){
-            y += 4;
-            ix += 6;
-        }
-        break;
-
-    case KEY_RIGHT:
-        if(x != 42){
-            x += 8;
-            ix += 1;
-        }
-        break;
-
-    case KEY_LEFT:
-        if (x != 2){
-            x -= 8;
-            ix -= 1;
-        }
-        break;
-
-    case 101:
-        temp = inv_top[1];
-        inv_top[1] = inv_box[ix];
-        inv_box[ix] = temp;
-        break;
-
-    case 113:
-        temp = inv_top[0];
-        inv_top[0] = inv_box[ix];
-        inv_box[ix] = temp;
-        break;
-
-    default:
-        break;
-    }
-
-    if (c == 10){
-        break;
     }
 }
 
+void Inventory_manager::read_inv(string (&inv_top)[2],string (&inv_box)[42]){
+    string temp_top,temp_box;
+    
+    ifstream view_file("player/inventory.txt");
+    if (view_file.is_open()) {
+        view_file >> temp_box >> temp_top;
+        view_file.close();
+    
+    for (int i = 0;i<=41;i++){
+        inv_box[i] = temp_box[i];
+    }
+    
+    for (int i = 0;i<=1;i++){
+        inv_top[i] = temp_top[i];
+    }
+
+    }
+    else{
+        endwin();
+
+        cout << "Error settings speed file missing\n";        
+        exit(1);
+    }   
 }
 
 int main(){
@@ -791,14 +823,9 @@ int main(){
         bool up = true;
         int speed;
         char map_grid[32][128];
-        int inv_top[2] = {0,0};
-        int inv_box[41];
+        string inv_top[2];
+        string inv_box[42];
     //set vars end
-
-        for(int i=0;i<=41;i++){
-            inv_box[i] = i;
-        }
-
 
     //code start
 
@@ -825,7 +852,9 @@ int main(){
 
                 return -1;
             }
-        
+
+            Inventory_class.read_inv(inv_top,inv_box);
+
             //main win
             WINDOW * main_win = Window_class.creWin(34,130,y_size/2-17,x_size/2-65,0,0,true,true);
 
@@ -835,13 +864,13 @@ int main(){
             //wepon 1 win
             WINDOW * wp1_win = Window_class.creWin(5,13,y_size/2-17-5,x_size/2-35,0,0,true,true);
             mvwprintw(wp1_win,4,9,"%s","[Q]");
-            mvwprintw(wp1_win,1,1,"%d",inv_top[0]);
+            mvwprintw(wp1_win,1,1,"%s",inv_top[0].c_str());
             wrefresh(wp1_win);
 
             //wepon 2 win
             WINDOW * wp2_win = Window_class.creWin(5,13,y_size/2-17-5,x_size/2-22,0,0,true,true);
             mvwprintw(wp2_win,4,9,"%s","[E]");
-            mvwprintw(wp2_win,1,1,"%d",inv_top[1]);
+            mvwprintw(wp2_win,1,1,"%s",inv_top[1].c_str());
             wrefresh(wp2_win);
 
             //menu win
