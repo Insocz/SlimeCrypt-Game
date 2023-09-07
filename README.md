@@ -22,6 +22,10 @@ The part that is visible is the "visibility around the player" its part of the g
 This img show the inv win (only with numbers this will change in to items later or blank spots).
 Items (numbers) can be selected using Q or E to one of the to top item slots.
 
+![](https://github.com/Insocz/SlimeCrypt-Game/blob/master/Screenshot_of_wp_icons.png)
+
+This are the new icons for wepons that replace the old numbers.
+
 ## There is lots of thinks not done yet so pls wait, the thinks that i done already are:
 * some settings
 * some menus
