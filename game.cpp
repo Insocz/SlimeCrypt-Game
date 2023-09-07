@@ -823,10 +823,7 @@ void Inventory_manager::read_inv(string (&inv_top)[2],string (&inv_box)[42],stri
         exit(1);
     }
 
-    ifstream file("player/wp_lib.txt");
-    if (file.is_open()) {
-        file >> temp;
-        file.close();
+    temp = ".............................<==|=.........<====.-------.===|=..<===============|==...|\\...>-|-|->..|/...|____|...||.....||....)|===.-------.=====..<<-----------==-==-.......o=====........";
     
     f = 0;
 
@@ -837,14 +834,6 @@ void Inventory_manager::read_inv(string (&inv_top)[2],string (&inv_box)[42],stri
             v++;
         }
         f += 21;
-    }
-
-    }
-    else{
-        endwin();
-
-        cout << "Error settings speed file missing\n";        
-        exit(1);
     }      
 }
 
