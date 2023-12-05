@@ -1,5 +1,13 @@
 # SlimeCrypt
 
+## Problem
+    Im geting huge error if it try to compile the code and the update i was working on to optimaze the code
+    no even the old code can by compiled and i dont know why it could be update of my os or some of the liberies
+    i used or something else.
+
+    So i dont think i will contionue on this "game" as i was doing for some time already
+    meaby i get sometime back to it and fix it or not.
+
 ## The game
     Its not yet done game that should be open world/dungeon explore type of game.
     You as the player play as a slime in darknes you are lucky beacuse you can see
